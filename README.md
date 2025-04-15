@@ -1,87 +1,50 @@
-# SQL Challenge Game 🎮
+# SQL Cyber Missions
 
-This is a fun, styled SQL Challenge Game built with **React + Vite + Tailwind CSS**. It features NPCs like **Cipher**, **Zen**, and **Phoebe** who guide you as you type and execute SQL queries to solve cybersecurity missions.
+An interactive educational game designed to teach SQL through an immersive cyberpunk storyline.
 
----
+## Storyline
+In a dystopian future, a rogue AI Hacker is sabotaging global systems. You are humanity’s last hope.
+Solve 10 SQL-based missions to trace the hacker's activity and secure the digital world.
 
-## 🌟 Features
+## Characters
+- **Nova** – Your mission commander, gives you each challenge.
+- **Cipher** – Technical assistant offering SQL hints.
+- **Zen** – Provides emotional guidance and motivation.
+- **Phoebe** – Tracks your progress and gives feedback.
 
-- 🧠 **NPC Interactions** – Get responses from Cipher (Tech), Zen (Support), and Phoebe (Motivation)
-- 🗃️ **Live Schema Table** – Always visible database schema for reference
-- 📝 **SQL Input Box** – Write and test your SQL queries
-- ✅ **Correct Answer Feedback** – Displays result table if correct
-- ❌ **Smart Error Messages** – Friendly guidance when SQL is wrong
-- 🏆 **Points and Leaderboard Rank** – Earn points and rise up!
-
----
-
-## 🚀 Getting Started
-
+## How to Play
+1. Clone the repository:
 ```bash
-# Clone the repo
-https://github.com/Astrid-weiwei/sql-challenge-game.git
-
-# Navigate into the folder
+git clone https://github.com/Astrid-weiwei/sql-challenge-game.git
 cd sql-challenge-game
-
-# Install dependencies
+```
+2. Install dependencies:
+```bash
 npm install
-
-# Start the development server
+```
+3. Start the game:
+```bash
 npm run dev
 ```
 
-Then go to: [http://localhost:5173](http://localhost:5173)
+##  Game Flow
+- Start on the **Home Page** to learn the mission context
+- Each mission involves writing an SQL query to solve a problem
+- If incorrect:
+  - Cipher provides technical hints
+  - Zen offers emotional support
+  - Phoebe tracks your attempts and gives motivational feedback
+- Correct solutions reward points and unlock new missions
 
----
+## Tech Stack
+- React + TypeScript
+- TailwindCSS
+- Framer Motion
+- React Router
 
-## 🛠️ Tech Stack
+##  In Progress
+- Missions 3–10
+- Leaderboard system
+- Sound effects and animations
 
-- [Vite](https://vitejs.dev/) – Fast dev environment
-- [React](https://reactjs.org/) – UI framework
-- [Tailwind CSS](https://tailwindcss.com/) – Utility-first CSS
-- [TypeScript](https://www.typescriptlang.org/) – Typed JS
 
----
-
-## 📦 File Structure
-
-```
-sql-challenge-game/
-├── public/
-├── src/
-│   ├── components/
-│   │   └── SchemaSection.tsx
-│   ├── App.tsx
-│   ├── index.css
-│   └── main.tsx
-├── index.html
-├── package.json
-├── tailwind.config.js
-└── tsconfig.json
-```
-
----
-
-## 📌 Future Plans
-
-- [ ] Add Mission 2
-- [ ] Sound effects on NPC response
-- [ ] Save score and leaderboard
-- [ ] Add more SQL challenges
-
----
-
-## 📸 Screenshots
-
-Coming soon...
-
----
-
-## 💬 Feedback or Contributions
-
-Feel free to open issues or contribute with a pull request!
-
----
-
-Made with 💻 and ☕ by [Astrid](https://github.com/Astrid-weiwei)
