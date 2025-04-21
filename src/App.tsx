@@ -1,10 +1,15 @@
 
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import Mission1 from './pages/Mission1';
 import Mission2 from './pages/Mission2';
 
 export default function App() {
+  useEffect(() => {
+    localStorage.removeItem('points');
+  }, []);
+
   return (
     <Router>
       <Routes>
