@@ -47,4 +47,6 @@ npm run dev
 - Leaderboard system
 - Sound effects and animations
 
+## Demo Link
+- https://sql-challenge-game.vercel.app/
 
