@@ -25,10 +25,11 @@ export default function HomePage() {
         >
           Enter
         </button>
+
+        <p className="mt-6 text-sm text-pink-300 italic">
+          🧚 Phoebe says: "Your journey begins now. Stay focused, agent!"
+        </p>
       </div>
     </div>
   );
 }
-
-
-
