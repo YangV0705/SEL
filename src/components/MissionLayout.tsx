@@ -33,6 +33,7 @@ export default function MissionLayout({
   const [startTime, setStartTime] = useState(Date.now());
   const [hasTriggeredBackspaceFeedback, setHasTriggeredBackspaceFeedback] = useState(false);
   const [backspaceCount, setBackspaceCount] = useState(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
 
   const navigate = useNavigate();
   const missionKey = `mission_${missionNumber}_completed`;
@@ -53,6 +54,12 @@ export default function MissionLayout({
 
   useEffect(() => {
     setStartTime(Date.now());
+    setElapsedTime(0);
+    const interval = setInterval(() => {
+      setElapsedTime(prev => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, [missionNumber]);
 
   useEffect(() => {
@@ -63,7 +70,7 @@ export default function MissionLayout({
           ...prev,
           Zen: "<span class='text-purple-400'>Zen (SEL Reflection):</span> You've been quiet for a while. Remember, it's okay to take breaks. ✨"
         }));
-      }, 45000);
+      }, 60000);
     }
     return () => clearTimeout(timer);
   }, [showNext]);
@@ -115,7 +122,7 @@ export default function MissionLayout({
         setPoints(updatedPoints);
       }
 
-      if (duration <= 45) {
+      if (duration <= 35) {
         setNpcResponse({
           Cipher: '',
           Zen: '',
@@ -194,27 +201,39 @@ export default function MissionLayout({
       setBackspaceCount(prev => {
         const newCount = prev + 1;
 
-      if (newCount > 15 && !hasTriggeredBackspaceFeedback) {
-        setNpcResponse(prev => ({
-          ...prev,
-          Zen: "<span class='text-purple-400'>Zen (SEL Reflection):</span> Looks like you're feeling stuck. Take a deep breath - you're doing your best! 🌸"
-        }));
+        if (newCount > 15 && !hasTriggeredBackspaceFeedback) {
+          setNpcResponse(prev => ({
+            ...prev,
+            Zen: "<span class='text-purple-400'>Zen (SEL Reflection):</span> Looks like you're feeling stuck. Take a deep breath - you're doing your best! 🌸"
+          }));
 
-        setHasTriggeredBackspaceFeedback(true);
+          setHasTriggeredBackspaceFeedback(true);
 
-        setTimeout(() => {
-          setHasTriggeredBackspaceFeedback(false);
-        }, 15000);
-      }
+          setTimeout(() => {
+            setHasTriggeredBackspaceFeedback(false);
+          }, 15000);
+        }
 
-      return newCount;
-    });
-  }
-};
+        return newCount;
+      });
+    }
+  };
 
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  };
 
   return (
-    <div className="text-green-300 font-mono px-6 py-4 bg-black min-h-screen">
+    <div className="text-green-300 font-mono px-6 py-4 bg-black min-h-screen relative">
+      <div
+        className="absolute top-4 right-4 bg-green-900 bg-opacity-70 text-green-200 px-3 py-1 rounded font-mono text-sm select-none"
+        aria-label="Elapsed time"
+      >
+        ⏱ Time: {formatTime(elapsedTime)}
+      </div>
+
       <h1 className="text-2xl font-bold text-green-400 mb-2">Mission {missionNumber}</h1>
 
       <div className="grid md:grid-cols-3 gap-6 items-start">
