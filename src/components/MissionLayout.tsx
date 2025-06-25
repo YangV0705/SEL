@@ -9,9 +9,6 @@ interface Props {
   correctSQL: string;
   resultHeaders: string[];
   resultData: Record<string, string>[];
-  cipherHint: string;
-  zenHint: string;
-  phoebeHint: string;
   successText: string;
   nextMissionRoute: string;
 }
@@ -23,9 +20,6 @@ export default function MissionLayout({
   correctSQL,
   resultHeaders,
   resultData,
-  cipherHint,
-  zenHint,
-  phoebeHint,
   successText,
   nextMissionRoute,
 }: Props) {
@@ -56,11 +50,9 @@ export default function MissionLayout({
     };
   }, []);
 
-  const handleExecute = () => {
+  const handleExecute = async () => {
     const normalizeSQL = (sql: string) => sql.replace(/\s+/g, ' ').trim().toLowerCase();
     const isCorrect = normalizeSQL(userSQL) === normalizeSQL(correctSQL);
-
-    const nextMistake = mistakeCount + 1;
 
     if (isCorrect) {
       setMistakeCount(0);
@@ -106,15 +98,40 @@ export default function MissionLayout({
         </table>
       );
     } else {
+      const nextMistake = mistakeCount + 1;
       setMistakeCount(nextMistake);
-      const newNpcResponse = { Cipher: '', Zen: '', Phoebe: '' };
 
-      if (nextMistake === 1) newNpcResponse.Cipher = `<span class='text-blue-400'>Cipher (Hint & Warning):</span> ${cipherHint}`;
-      else if (nextMistake === 2) newNpcResponse.Zen = `<span class='text-purple-400'>Zen (SEL Reflection):</span> ${zenHint}`;
-      else newNpcResponse.Phoebe = `<span class='text-pink-400'>Phoebe (Game Feedback):</span> ${phoebeHint}`;
+      try {
+        const response = await fetch('http://localhost:4000/api/npc-feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userSQL }),
+        });
 
-      setNpcResponse(newNpcResponse);
-      setResultTable(null);
+        const data = await response.json();
+
+        const npcData = data.npcFeedback || {};
+        const newNpcResponse = {
+          Cipher: npcData.Cipher
+            ? `<span class='text-blue-400'>Cipher (Hint & Warning):</span> ${npcData.Cipher}`
+            : '',
+          Zen: npcData.Zen
+            ? `<span class='text-purple-400'>Zen (SEL Reflection):</span> ${npcData.Zen}`
+            : '',
+          Phoebe: npcData.Phoebe
+            ? `<span class='text-pink-400'>Phoebe (Game Feedback):</span> ${npcData.Phoebe}`
+            : '',
+        };
+
+        setNpcResponse(newNpcResponse);
+        setResultTable(null);
+      } catch (err) {
+        setNpcResponse({
+          Cipher: '',
+          Zen: '',
+          Phoebe: `<span class='text-pink-400'>Phoebe (Game Feedback):</span> Claude API not responding.`,
+        });
+      }
     }
 
     setShowQuitConfirm(false);
@@ -151,7 +168,7 @@ export default function MissionLayout({
         <p className="text-sm text-cyan-200"><strong>Story Background:</strong> {story}</p>
         <p className="mt-2 text-sm text-yellow-300 font-semibold">{nova}</p>
         {missionAlreadyDone && (
-          <p className="mt-1 text-yellow-400 text-sm">✅ You’ve already completed this mission.</p>
+          <p className="mt-1 text-yellow-400 text-sm">✅ You've already completed this mission.</p>
         )}
       </div>
 
