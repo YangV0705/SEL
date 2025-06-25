@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import RewardStatus from './RewardStatus';
 
 interface Props {
   missionNumber: number;
@@ -14,6 +15,7 @@ interface Props {
   phoebeHint: string;
   successText: string;
   nextMissionRoute: string;
+  onSuccess?: () => void;
 }
 
 export default function MissionLayout({
@@ -49,7 +51,6 @@ export default function MissionLayout({
     syncPoints();
     window.addEventListener('focus', syncPoints);
     window.addEventListener('storage', syncPoints);
-
     return () => {
       window.removeEventListener('focus', syncPoints);
       window.removeEventListener('storage', syncPoints);
@@ -59,13 +60,11 @@ export default function MissionLayout({
   const handleExecute = () => {
     const normalizeSQL = (sql: string) => sql.replace(/\s+/g, ' ').trim().toLowerCase();
     const isCorrect = normalizeSQL(userSQL) === normalizeSQL(correctSQL);
-
     const nextMistake = mistakeCount + 1;
 
     if (isCorrect) {
       setMistakeCount(0);
       setShowNext(true);
-
       localStorage.setItem('lastMissionNumber', String(missionNumber));
 
       if (!localStorage.getItem(missionKey)) {
@@ -147,16 +146,21 @@ export default function MissionLayout({
     <div className="text-green-300 font-mono px-6 py-4 bg-black min-h-screen">
       <h1 className="text-2xl font-bold text-green-400 mb-2">Mission {missionNumber}</h1>
 
-      <div className="mb-4 border border-cyan-500 p-4 rounded">
-        <p className="text-sm text-cyan-200"><strong>Story Background:</strong> {story}</p>
-        <p className="mt-2 text-sm text-yellow-300 font-semibold">{nova}</p>
-        {missionAlreadyDone && (
-          <p className="mt-1 text-yellow-400 text-sm">✅ You’ve already completed this mission.</p>
-        )}
-      </div>
-
       <div className="grid md:grid-cols-3 gap-6 items-start">
         <div className="md:col-span-2 space-y-4">
+          {/* Story Background now inside left column */}
+          <div className="border border-cyan-500 p-4 rounded">
+            <p className="text-sm text-cyan-200">
+              <strong>Story Background:</strong> {story}
+            </p>
+            <p className="mt-2 text-sm text-yellow-300 font-semibold">{nova}</p>
+            {missionAlreadyDone && (
+              <p className="mt-1 text-yellow-400 text-sm">
+                ✅ You’ve already completed this mission.
+              </p>
+            )}
+          </div>
+
           <label htmlFor="sqlInput" className="text-white font-semibold">📂 Enter your SQL:</label>
           <textarea
             id="sqlInput"
@@ -175,9 +179,8 @@ export default function MissionLayout({
             {showQuitConfirm && (
               <button onClick={confirmQuit} className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded shadow-md">✅ Confirm Quit</button>
             )}
-            <button onClick={() => navigate('/reward')} className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded shadow-md">⭐ Reward</button>
-            <button onClick={() => navigate('/')} className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded shadow-md">🏠 Home</button>
-            <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="bg-gray-700 text-white px-3 py-2 rounded">🧹 Reset All Progress</button>
+            <button onClick={() => navigate('/')} className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded shadow-md">⇱ Home</button>
+            <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="bg-gray-700 text-white px-3 py-2 rounded">↺ Reset All Progress</button>
           </div>
 
           <div className="grid grid-cols-3 gap-4 mt-4">
@@ -208,6 +211,8 @@ export default function MissionLayout({
           {resultTable}
 
           <p className="text-md text-white mt-6">🌟 <span className="text-yellow-400">Points:</span> {points}</p>
+
+          <RewardStatus />
         </div>
 
         <div className="border border-green-500 p-4 rounded overflow-auto max-h-[30rem]">

@@ -4,6 +4,11 @@ const Mission1 = () => {
   const handleSuccess = () => {
     const currentPoints = Number(localStorage.getItem('points')) || 0;
     localStorage.setItem('points', String(currentPoints + 1));
+
+    const currentMission = Number(localStorage.getItem('lastMissionNumber')) || 1;
+    if (currentMission < 1) {
+      localStorage.setItem('lastMissionNumber', '1');
+    }
   };
 
   return (
@@ -28,4 +33,3 @@ const Mission1 = () => {
 };
 
 export default Mission1;
-
