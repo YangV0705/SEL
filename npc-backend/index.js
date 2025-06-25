@@ -16,31 +16,44 @@ app.get('/', (req, res) => {
 });
 
 app.post('/api/npc-feedback', async (req, res) => {
-  const { userSQL } = req.body;
+  const { userSQL, correctSQL } = req.body;
 
-  if (!userSQL) {
-    return res.status(400).json({ error: 'Missing userSQL in request body' });
+  if (!userSQL || !correctSQL) {
+    return res.status(400).json({ error: 'Missing userSQL or correctSQL in request body' });
   }
 
   const prompt = `
-You are three AI assistants helping a user learn SQL in a game. The user submitted this SQL query:
-
-${userSQL}
-
-Please respond as three distinct characters:
-
-1. Cipher (Technical Assistant): Provide detailed feedback on the SQL syntax and logic.
-2. Zen (Emotional Coach): Provide emotional support and encouragement.
-3. Phoebe (Game Guide): Provide progress feedback and motivating words.
-
-Respond in a JSON format like this:
-
-{
-  "Cipher": "Your feedback here",
-  "Zen": "Your feedback here",
-  "Phoebe": "Your feedback here"
-}
-`;
+  You are three AI NPCs helping a player learn SQL in a gamified educational mission. Based on the user's SQL input, generate character-specific feedback.
+  
+  Instructions:
+  - Compare user's SQL to the correct SQL (ignoring case and whitespace differences).
+  - If it is correct:
+    - Return positive feedback from each character.
+  - If it is incorrect:
+    - Return constructive feedback from each character encouraging improvement.
+  - Important: Zen (Emotional Coach) should always provide some feedback when the user's SQL is incorrect, even if there is no syntax error.
+  
+  Characters:
+  1. Cipher (Technical Assistant): Provide technical SQL-specific feedback (syntax, logic).
+  2. Zen (Emotional Coach): Provide motivation, encouragement, and emotional support. Always give feedback when the user's SQL is incorrect.
+  3. Phoebe (Game Guide): Provide fun, gamified feedback and celebrate progress.
+  
+  Respond in ONLY this JSON format with all 3 keys ALWAYS present (even if feedback is short). No other text. Example:
+  
+  {
+    "Cipher": "Great use of SELECT and WHERE clauses!",
+    "Zen": "You're improving every step! Stay focused!",
+    "Phoebe": "Mission complete! You've unlocked the next challenge!"
+  }
+  
+  Now generate your feedback:
+  
+  User's SQL:
+  ${userSQL}
+  
+  Correct SQL:
+  ${correctSQL}
+  `;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/chat/completions', {
@@ -51,33 +64,53 @@ Respond in a JSON format like this:
       },
       body: JSON.stringify({
         model: "claude-3-haiku-20240307",
-        messages: [
-          { role: "user", content: prompt }
-        ],
-        max_tokens_to_sample: 300,
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 300,
         temperature: 0.7
       }),
     });
 
     const data = await response.json();
 
-    // Anthropic Chat API returns data.choices[0].message.content
-    const text = data.choices?.[0]?.message?.content || "";
+    let rawText = data?.choices?.[0]?.message?.content?.trim() || '';
 
-    let npcFeedback;
-    try {
-      npcFeedback = JSON.parse(text);
-    } catch (err) {
-      npcFeedback = { error: "Failed to parse LLM response as JSON", rawResponse: text };
+    console.log('Claude raw content:', rawText);
+
+    if (rawText.startsWith('```') && rawText.endsWith('```')) {
+      rawText = rawText.slice(3, -3).trim();
     }
 
-    res.json({ npcFeedback });
+    let npcFeedback;
+
+    try {
+      npcFeedback = JSON.parse(rawText);
+    } catch (err) {
+      console.error('JSON parse error:', err);
+      npcFeedback = {
+        Cipher: 'Could not parse feedback, please try again.',
+        Zen: 'Keep calm, the system had trouble understanding your query.',
+        Phoebe: 'Oops! Something went wrong, try again later.'
+      };
+    }
+
+    npcFeedback.Cipher = npcFeedback.Cipher?.trim() || '';
+    npcFeedback.Zen = npcFeedback.Zen?.trim() || '';
+    npcFeedback.Phoebe = npcFeedback.Phoebe?.trim() || '';
+
+    return res.status(200).json({ npcFeedback });
   } catch (error) {
     console.error("Error calling LLM API:", error);
-    res.status(500).json({ error: 'Internal server error' });
+
+    return res.status(500).json({
+      npcFeedback: {
+        Cipher: '❌ Failed to reach NPC server.',
+        Zen: '🧘 Take a deep breath, the system is retrying...',
+        Phoebe: '⚠️ Network glitch! Try again soon.',
+      }
+    });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`✅ NPC Backend listening on http://localhost:${PORT}`);
 });

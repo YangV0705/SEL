@@ -12,7 +12,6 @@ interface Props {
   resultData: Record<string, string>[];
   successText: string;
   nextMissionRoute: string;
-  onSuccess?: () => void;
 }
 
 export default function MissionLayout({
@@ -26,12 +25,14 @@ export default function MissionLayout({
   nextMissionRoute,
 }: Props) {
   const [npcResponse, setNpcResponse] = useState({ Cipher: '', Zen: '', Phoebe: '' });
-  const [mistakeCount, setMistakeCount] = useState(0);
   const [userSQL, setUserSQL] = useState('');
   const [showNext, setShowNext] = useState(false);
   const [resultTable, setResultTable] = useState<JSX.Element | null>(null);
   const [points, setPoints] = useState(() => Number(localStorage.getItem('points')) || 0);
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
+  const [startTime, setStartTime] = useState(Date.now());
+  const [hasTriggeredBackspaceFeedback, setHasTriggeredBackspaceFeedback] = useState(false);
+  const [backspaceCount, setBackspaceCount] = useState(0);
 
   const navigate = useNavigate();
   const missionKey = `mission_${missionNumber}_completed`;
@@ -41,7 +42,6 @@ export default function MissionLayout({
     const syncPoints = () => {
       setPoints(Number(localStorage.getItem('points')) || 0);
     };
-
     syncPoints();
     window.addEventListener('focus', syncPoints);
     window.addEventListener('storage', syncPoints);
@@ -51,13 +51,60 @@ export default function MissionLayout({
     };
   }, []);
 
+  useEffect(() => {
+    setStartTime(Date.now());
+  }, [missionNumber]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (!showNext) {
+      timer = setTimeout(() => {
+        setNpcResponse(prev => ({
+          ...prev,
+          Zen: "<span class='text-purple-400'>Zen (SEL Reflection):</span> You've been quiet for a while. Remember, it's okay to take breaks. ✨"
+        }));
+      }, 45000);
+    }
+    return () => clearTimeout(timer);
+  }, [showNext]);
+
+  const normalizeSQL = (sql: string) => sql.replace(/\s+/g, ' ').trim().toLowerCase();
+
+  const hasSyntaxError = (sql: string): boolean => {
+    const lower = sql.toLowerCase();
+    return !(lower.includes('select') && sql.trim().endsWith(';'));
+  };
+
   const handleExecute = async () => {
-    const normalizeSQL = (sql: string) => sql.replace(/\s+/g, ' ').trim().toLowerCase();
     const isCorrect = normalizeSQL(userSQL) === normalizeSQL(correctSQL);
-    const nextMistake = mistakeCount + 1;
+    const duration = (Date.now() - startTime) / 1000;
+    let npcFeedback = { Cipher: '', Zen: '', Phoebe: '' };
+
+    try {
+      const response = await fetch('http://localhost:4000/api/npc-feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userSQL, correctSQL }),
+      });
+
+      if (!response.ok) throw new Error(`Server Error: ${response.status}`);
+      const data = await response.json();
+
+      npcFeedback = {
+        Cipher: data?.npcFeedback?.Cipher || 'No Cipher feedback.',
+        Zen: data?.npcFeedback?.Zen || 'No Zen feedback.',
+        Phoebe: data?.npcFeedback?.Phoebe || 'No Phoebe feedback.',
+      };
+    } catch (error) {
+      console.error('LLM fetch error:', error);
+      npcFeedback = {
+        Cipher: '⚠️ Claude API not responding.',
+        Zen: '',
+        Phoebe: ''
+      };
+    }
 
     if (isCorrect) {
-      setMistakeCount(0);
       setShowNext(true);
       localStorage.setItem('lastMissionNumber', String(missionNumber));
 
@@ -68,15 +115,19 @@ export default function MissionLayout({
         setPoints(updatedPoints);
       }
 
-      setNpcResponse({
-        Cipher: `<span class='text-blue-400'>Cipher (Hint & Warning):</span> ${
-          localStorage.getItem(missionKey)
-            ? 'You‘ve already completed this mission. No extra points awarded.'
-            : successText
-        }`,
-        Zen: '',
-        Phoebe: '',
-      });
+      if (duration <= 45) {
+        setNpcResponse({
+          Cipher: '',
+          Zen: '',
+          Phoebe: `<span class='text-pink-400'>Phoebe (Game Feedback):</span> ${npcFeedback.Phoebe}`,
+        });
+      } else {
+        setNpcResponse({
+          Cipher: `<span class='text-blue-400'>Cipher (Hint & Warning):</span> ${npcFeedback.Cipher}`,
+          Zen: '',
+          Phoebe: '',
+        });
+      }
 
       setResultTable(
         <table className="mt-4 w-full text-sm text-white border border-green-500">
@@ -99,40 +150,17 @@ export default function MissionLayout({
         </table>
       );
     } else {
-      const nextMistake = mistakeCount + 1;
-      setMistakeCount(nextMistake);
+      const isSyntax = hasSyntaxError(userSQL);
+      const cipherFeedback = `<span class='text-blue-400'>Cipher (Hint & Warning):</span> ${npcFeedback.Cipher}`;
+      const zenFeedback = `<span class='text-purple-400'>Zen (SEL Reflection):</span> ${npcFeedback.Zen || "Keep going, you're making progress!"}`;
 
-      try {
-        const response = await fetch('http://localhost:4000/api/npc-feedback', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userSQL }),
-        });
-
-        const data = await response.json();
-
-        const npcData = data.npcFeedback || {};
-        const newNpcResponse = {
-          Cipher: npcData.Cipher
-            ? `<span class='text-blue-400'>Cipher (Hint & Warning):</span> ${npcData.Cipher}`
-            : '',
-          Zen: npcData.Zen
-            ? `<span class='text-purple-400'>Zen (SEL Reflection):</span> ${npcData.Zen}`
-            : '',
-          Phoebe: npcData.Phoebe
-            ? `<span class='text-pink-400'>Phoebe (Game Feedback):</span> ${npcData.Phoebe}`
-            : '',
-        };
-
-        setNpcResponse(newNpcResponse);
-        setResultTable(null);
-      } catch (err) {
-        setNpcResponse({
-          Cipher: '',
-          Zen: '',
-          Phoebe: `<span class='text-pink-400'>Phoebe (Game Feedback):</span> Claude API not responding.`,
-        });
+      if (isSyntax) {
+        setNpcResponse({ Cipher: cipherFeedback, Zen: '', Phoebe: '' });
+      } else {
+        setNpcResponse({ Cipher: '', Zen: zenFeedback, Phoebe: '' });
       }
+
+      setResultTable(null);
     }
 
     setShowQuitConfirm(false);
@@ -142,7 +170,7 @@ export default function MissionLayout({
     setNpcResponse({
       Cipher: '',
       Zen: '',
-      Phoebe: `<span class='text-pink-400'>Phoebe (Game Feedback):</span> I understand this is tough. Confirm quit and we’ll save your progress.`,
+      Phoebe: `<span class='text-pink-400'>Phoebe (Game Feedback):</span> I understand this is tough. Confirm quit and we'll save your progress.`,
     });
     setShowQuitConfirm(true);
   };
@@ -161,13 +189,36 @@ export default function MissionLayout({
     setResultTable(null);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Backspace') {
+      setBackspaceCount(prev => {
+        const newCount = prev + 1;
+
+      if (newCount > 15 && !hasTriggeredBackspaceFeedback) {
+        setNpcResponse(prev => ({
+          ...prev,
+          Zen: "<span class='text-purple-400'>Zen (SEL Reflection):</span> Looks like you're feeling stuck. Take a deep breath - you're doing your best! 🌸"
+        }));
+
+        setHasTriggeredBackspaceFeedback(true);
+
+        setTimeout(() => {
+          setHasTriggeredBackspaceFeedback(false);
+        }, 15000);
+      }
+
+      return newCount;
+    });
+  }
+};
+
+
   return (
     <div className="text-green-300 font-mono px-6 py-4 bg-black min-h-screen">
       <h1 className="text-2xl font-bold text-green-400 mb-2">Mission {missionNumber}</h1>
 
       <div className="grid md:grid-cols-3 gap-6 items-start">
         <div className="md:col-span-2 space-y-4">
-          {/* Story Background now inside left column */}
           <div className="border border-cyan-500 p-4 rounded">
             <p className="text-sm text-cyan-200">
               <strong>Story Background:</strong> {story}
@@ -175,7 +226,7 @@ export default function MissionLayout({
             <p className="mt-2 text-sm text-yellow-300 font-semibold">{nova}</p>
             {missionAlreadyDone && (
               <p className="mt-1 text-yellow-400 text-sm">
-                ✅ You’ve already completed this mission.
+                ✅ You've already completed this mission.
               </p>
             )}
           </div>
@@ -185,6 +236,7 @@ export default function MissionLayout({
             id="sqlInput"
             value={userSQL}
             onChange={(e) => setUserSQL(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Type your SQL here..."
             className="w-full h-24 p-3 rounded-md border border-green-500 bg-black text-green-200 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400"
           />
