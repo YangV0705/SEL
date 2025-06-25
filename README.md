@@ -1,13 +1,13 @@
 # SQL Cyber Missions
 
-An interactive educational game designed to teach SQL through an immersive cyberpunk storyline.
+An immersive interactive educational game teaching SQL through a cyberpunk storyline.
 
-## Storyline
-In a dystopian future, a rogue AI Hacker is sabotaging global systems. You are humanity’s last hope.
-Solve 10 SQL-based missions to trace the hacker's activity and secure the digital world.
+## 🎮 Project Overview
+
+Players solve a series of SQL-based missions to track down a rogue hacker and protect the digital world. The game combines storytelling, tasks, and dynamic NPC feedback to make learning SQL engaging and immersive.
+
 
 ## Characters
-- **Nova** – Your mission commander, gives you each challenge.
 - **Cipher** – Technical assistant offering SQL hints.
 - **Zen** – Provides emotional guidance and motivation.
 - **Phoebe** – Tracks your progress and gives feedback.
@@ -18,11 +18,25 @@ Solve 10 SQL-based missions to trace the hacker's activity and secure the digita
 git clone https://github.com/Astrid-weiwei/sql-challenge-game.git
 cd sql-challenge-game
 ```
-2. Install dependencies:
+2. Install frontend dependencies:
 ```bash
 npm install
 ```
-3. Start the game:
+3. Install backend dependencies:
+```bash
+cd ../npc_backend
+npm install
+```
+4. Configure backend environment variables by creating a .env file in the backend folder:
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+PORT=4000
+```
+5. Start the backend server:
+```bash
+node index.js
+```
+6. Start the game:
 ```bash
 npm run dev
 ```
@@ -37,15 +51,15 @@ npm run dev
 - Correct solutions reward points and unlock new missions
 
 ## Tech Stack
-- React + TypeScript
-- TailwindCSS
-- Framer Motion
-- React Router
+**Frontend** - React + TypeScript + TailwindCSS + React Router + Framer Motion 
+**Backend** - Node.js + Express + Anthropic Claude API
 
 ##  In Progress
-- Missions 3–10
-- Leaderboard system
-- Sound effects and animations
+- complete missions 3 through 10
+
+- emotion recognition to drive NPC feedback
+
+- Mistake review page
 
 ## Demo Link
 - https://sql-challenge-game.vercel.app/

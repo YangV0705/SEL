@@ -10,9 +10,6 @@ interface Props {
   correctSQL: string;
   resultHeaders: string[];
   resultData: Record<string, string>[];
-  cipherHint: string;
-  zenHint: string;
-  phoebeHint: string;
   successText: string;
   nextMissionRoute: string;
   onSuccess?: () => void;
@@ -25,9 +22,6 @@ export default function MissionLayout({
   correctSQL,
   resultHeaders,
   resultData,
-  cipherHint,
-  zenHint,
-  phoebeHint,
   successText,
   nextMissionRoute,
 }: Props) {
@@ -57,7 +51,7 @@ export default function MissionLayout({
     };
   }, []);
 
-  const handleExecute = () => {
+  const handleExecute = async () => {
     const normalizeSQL = (sql: string) => sql.replace(/\s+/g, ' ').trim().toLowerCase();
     const isCorrect = normalizeSQL(userSQL) === normalizeSQL(correctSQL);
     const nextMistake = mistakeCount + 1;
@@ -105,15 +99,40 @@ export default function MissionLayout({
         </table>
       );
     } else {
+      const nextMistake = mistakeCount + 1;
       setMistakeCount(nextMistake);
-      const newNpcResponse = { Cipher: '', Zen: '', Phoebe: '' };
 
-      if (nextMistake === 1) newNpcResponse.Cipher = `<span class='text-blue-400'>Cipher (Hint & Warning):</span> ${cipherHint}`;
-      else if (nextMistake === 2) newNpcResponse.Zen = `<span class='text-purple-400'>Zen (SEL Reflection):</span> ${zenHint}`;
-      else newNpcResponse.Phoebe = `<span class='text-pink-400'>Phoebe (Game Feedback):</span> ${phoebeHint}`;
+      try {
+        const response = await fetch('http://localhost:4000/api/npc-feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userSQL }),
+        });
 
-      setNpcResponse(newNpcResponse);
-      setResultTable(null);
+        const data = await response.json();
+
+        const npcData = data.npcFeedback || {};
+        const newNpcResponse = {
+          Cipher: npcData.Cipher
+            ? `<span class='text-blue-400'>Cipher (Hint & Warning):</span> ${npcData.Cipher}`
+            : '',
+          Zen: npcData.Zen
+            ? `<span class='text-purple-400'>Zen (SEL Reflection):</span> ${npcData.Zen}`
+            : '',
+          Phoebe: npcData.Phoebe
+            ? `<span class='text-pink-400'>Phoebe (Game Feedback):</span> ${npcData.Phoebe}`
+            : '',
+        };
+
+        setNpcResponse(newNpcResponse);
+        setResultTable(null);
+      } catch (err) {
+        setNpcResponse({
+          Cipher: '',
+          Zen: '',
+          Phoebe: `<span class='text-pink-400'>Phoebe (Game Feedback):</span> Claude API not responding.`,
+        });
+      }
     }
 
     setShowQuitConfirm(false);
