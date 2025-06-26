@@ -11,6 +11,7 @@ import {
   TextField,
   Button
 } from '@mui/material';
+import WrongBook from '../pages/WrongBook';
 
 interface Props {
   missionNumber: number;
@@ -215,6 +216,8 @@ export default function MissionLayout({
       missionNumber,
       userSQL,
       correctSQL,
+      story,
+      nova,
       userMood,
       timestamp: new Date().toISOString(),
     };
@@ -295,9 +298,10 @@ export default function MissionLayout({
             )}
             <button onClick={handleQuit} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded shadow-md">✖ Quit</button>
             {showQuitConfirm && (
-              <button onClick={confirmQuit} className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded shadow-md">✅ Confirm Quit</button>
+              <button onClick={confirmQuit} className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded shadow-md">✓ Confirm Quit</button>
             )}
             <button onClick={() => navigate('/')} className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded shadow-md">⇱ Home</button>
+            <button onClick={() => navigate('/wrongbook')} className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded shadow-md">✎ WrongBook</button>
             <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="bg-gray-700 text-white px-3 py-2 rounded">↺ Reset All Progress</button>
           </div>
 

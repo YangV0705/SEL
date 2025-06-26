@@ -3,7 +3,10 @@ import { useEffect, useState } from 'react';
 interface WrongEntry {
   missionNumber: number;
   userSQL: string;
-  mood?: string;
+  correctSQL: string;
+  story: string;
+  nova: string;
+  userMood?: string;
   timestamp: string;
 }
 
@@ -27,9 +30,16 @@ export default function WrongBook() {
           {entries.map((entry, idx) => (
             <li key={idx} className="border border-yellow-600 p-4 rounded bg-gray-900">
               <p><strong>Mission:</strong> {entry.missionNumber}</p>
-              <p><strong>SQL:</strong> <code className="text-cyan-400">{entry.userSQL}</code></p>
-              {entry.mood && <p><strong>Mood:</strong> {entry.mood}</p>}
-              <p className="text-xs text-gray-500"><strong>Saved on:</strong> {entry.timestamp}</p>
+              <p><strong>Story:</strong> {entry.story}</p>
+              <p><strong>Nova Prompt:</strong> {entry.nova}</p>
+              <p><strong>Your SQL:</strong> <code className="text-cyan-400">{entry.userSQL}</code></p>
+              <p><strong>Correct SQL:</strong> <code className="text-green-400">{entry.correctSQL}</code></p>
+              <p><strong>Your Mood:</strong> <span className="text-pink-400">{entry.userMood}</span></p>
+              {/* {entry.mood && (
+                <p><strong>Your Mood:</strong> <span className="text-pink-400">{entry.mood}</span></p>
+            )} */}
+
+              <p className="text-xs text-gray-500"><strong>Saved on:</strong> {new Date(entry.timestamp).toLocaleString()}</p>
             </li>
           ))}
         </ul>
