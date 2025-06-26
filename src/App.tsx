@@ -8,6 +8,7 @@ import Mission3 from './pages/Mission3';
 import Mission4 from './pages/Mission4';
 import Mission5 from './pages/Mission5';
 import Mission6 from './pages/Mission6';
+import WrongBook from './pages/WrongBook'; 
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/mission4" element={<Mission4 />} />
         <Route path="/mission5" element={<Mission5 />} />
         <Route path="/mission6" element={<Mission6 />} />
+        <Route path="/wrongbook" element={<WrongBook />} /> 
       </Routes>
     </Router>
   );

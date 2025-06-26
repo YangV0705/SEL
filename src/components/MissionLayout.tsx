@@ -3,6 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import RewardStatus from './RewardStatus';
 
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button
+} from '@mui/material';
+
 interface Props {
   missionNumber: number;
   story: string;
@@ -34,6 +43,9 @@ export default function MissionLayout({
   const [hasTriggeredBackspaceFeedback, setHasTriggeredBackspaceFeedback] = useState(false);
   const [backspaceCount, setBackspaceCount] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [showWrongModal, setShowWrongModal] = useState(false);
+  const [userMood, setUserMood] = useState('');
+
 
   const navigate = useNavigate();
   const missionKey = `mission_${missionNumber}_completed`;
@@ -168,6 +180,7 @@ export default function MissionLayout({
       }
 
       setResultTable(null);
+      setShowWrongModal(true);
     }
 
     setShowQuitConfirm(false);
@@ -196,6 +209,20 @@ export default function MissionLayout({
     setResultTable(null);
   };
 
+  const handleSaveWrong = () => {
+    const prev = JSON.parse(localStorage.getItem('wrongBook') || '[]');
+    const newEntry = {
+      missionNumber,
+      userSQL,
+      correctSQL,
+      userMood,
+      timestamp: new Date().toISOString(),
+    };
+    localStorage.setItem('wrongBook', JSON.stringify([...prev, newEntry]));
+    setUserMood('');
+    setShowWrongModal(false);
+  };
+  
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Backspace') {
       setBackspaceCount(prev => {
@@ -226,6 +253,7 @@ export default function MissionLayout({
   };
 
   return (
+    <>
     <div className="text-green-300 font-mono px-6 py-4 bg-black min-h-screen relative">
       <div
         className="absolute top-4 right-4 bg-green-900 bg-opacity-70 text-green-200 px-3 py-1 rounded font-mono text-sm select-none"
@@ -332,5 +360,29 @@ export default function MissionLayout({
         </div>
       </div>
     </div>
+    <Dialog open={showWrongModal} onClose={() => setShowWrongModal(false)}>
+    <DialogTitle>Save to Mistake Journal</DialogTitle>
+    <DialogContent>
+    <TextField
+      label="Your mood or notes (optional)"
+      multiline
+      fullWidth
+      minRows={3}
+      value={userMood}
+      onChange={(e) => setUserMood(e.target.value)}
+      variant="outlined"
+      margin="dense"
+    />
+    </DialogContent>
+    <DialogActions>
+    <Button onClick={() => setShowWrongModal(false)} color="secondary">
+      Cancel
+    </Button>
+    <Button onClick={handleSaveWrong} variant="contained" color="primary">
+      Save
+    </Button>
+    </DialogActions>
+    </Dialog>
+    </>
   );
 }
