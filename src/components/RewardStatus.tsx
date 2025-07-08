@@ -24,6 +24,29 @@ export default function RewardStatus() {
   const displayedBadges = Math.min(badges, 5);
   const allCompleted = points >= totalMissions;
 
+  const badgeInfo = [
+    {
+      name: "Data Seeker",
+      description: "basic SELECT queries",
+    },
+    {
+      name: "Filter Master",
+      description: "filtering with WHERE and time ranges",
+    },
+    {
+      name: "Join Explorer",
+      description: "multi-table JOIN operations",
+    },
+    {
+      name: "Logic Builder",
+      description: "using AND / OR / NOT conditions",
+    },
+    {
+      name: "SQL Strategist",
+      description: "full-scope SQL problem solving",
+    },
+  ];
+
   return (
     <div className="mt-10 p-6 border-t border-cyan-600 text-center text-green-200 font-mono">
       <h2 className="text-2xl font-bold text-yellow-300 mb-2">🎖️ Your Reward Status</h2>
@@ -31,14 +54,26 @@ export default function RewardStatus() {
         You've completed <span className="font-bold text-white">{points}</span> out of {totalMissions} missions.
       </p>
 
-      <div className="bg-gray-900 border border-cyan-600 rounded-lg p-4 mb-4 shadow">
+      <div className="bg-[#111827] border border-cyan-600 rounded-lg p-4 mb-4 shadow">
         <h3 className="text-purple-300 font-bold mb-2">🏅 Badges Earned</h3>
         <div className="flex justify-center gap-2">
           {[...Array(displayedBadges)].map((_, i) => (
-            <img key={`earned-${i}`} src="/badge-colored.jpg" alt="Earned Badge" className="w-10 h-10" />
+            <img
+              key={`earned-${i}`}
+              src="/badge-colored.jpg"
+              alt={`Badge ${i + 1}`}
+              className="w-10 h-10"
+              title={`🏅 Congratulations! You earned the "${badgeInfo[i].name}" badge. This proves you have mastered ${badgeInfo[i].description}.`}
+            />
           ))}
           {[...Array(5 - displayedBadges)].map((_, i) => (
-            <img key={`empty-${i}`} src="/badge-grey.png" alt="Empty Badge" className="w-10 h-10 opacity-30" />
+            <img
+              key={`empty-${i}`}
+              src="/badge-grey.png"
+              alt="Empty Badge"
+              className="w-10 h-10 opacity-30"
+              title="Badge not yet unlocked"
+            />
           ))}
         </div>
       </div>
