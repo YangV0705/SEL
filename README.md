@@ -62,5 +62,5 @@ npm run dev
 - Mistake review page
 
 ## Demo Link
-- https://sql-challenge-game.vercel.app/
+- hhttps://sql-challenge-game.netlify.app/
 
