@@ -62,5 +62,5 @@ npm run dev
 - Mistake review page
 
 ## Demo Link
-- hhttps://sql-challenge-game.netlify.app/
+- https://sql-challenge-game.netlify.app/
 
