@@ -102,7 +102,7 @@ export default function MissionLayout({
     let npcFeedback = { Cipher: '', Zen: '', Phoebe: '' };
  
     try {
-      const response = await fetch('http://localhost:4000/api/npc-feedback', {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/npc-feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userSQL, correctSQL }),
