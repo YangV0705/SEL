@@ -52,6 +52,7 @@ export default function MissionLayout({
   const [userMood, setUserMood] = useState('');
   const [backspaceCount, setBackspaceCount] = useState(0);
   const [hasTriggeredBackspaceFeedback, setHasTriggeredBackspaceFeedback] = useState(false);
+  const [lastInputTime, setLastInputTime] = useState(Date.now());
  
   const missionKey = `mission_${missionNumber}_completed`;
   const missionAlreadyDone = !!localStorage.getItem(missionKey);
@@ -90,6 +91,23 @@ export default function MissionLayout({
 
     return () => clearTimeout(idleTimer);
   }, [userSQL]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const idleTime = now - lastInputTime;
+  
+      if (idleTime >= 60000) {
+        setNpcResponse(prev => ({
+          ...prev,
+          Zen: "<span class='text-purple-400'>Zen (SEL Reflection):</span> You've been idle for a while. Take a deep breath and refocus! 🌼"
+        }));
+      }
+    }, 5000);
+  
+    return () => clearInterval(interval);
+  }, [lastInputTime]);
+  
  
   const normalizeSQL = (sql: string) => {
     return sql
@@ -262,8 +280,14 @@ export default function MissionLayout({
           <textarea
             id="sqlInput"
             value={userSQL}
-            onChange={(e) => setUserSQL(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onChange={(e) => {
+              setUserSQL(e.target.value);
+              setLastInputTime(Date.now());
+            }}
+            onKeyDown={(e) => {
+              handleKeyDown(e);
+              setLastInputTime(Date.now());
+            }}
             placeholder="Type your SQL here..."
             className="w-full h-24 p-3 rounded-md border border-green-500 bg-black text-green-200 resize-none focus:outline-none focus:ring-2 focus:ring-cyan-400"
           />
