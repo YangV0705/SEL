@@ -77,6 +77,19 @@ export default function MissionLayout({
     }, 1000);
     return () => clearInterval(interval);
   }, [missionNumber]);
+
+  useEffect(() => {
+    if (!userSQL) return;
+
+    const idleTimer = setTimeout(() => {
+      setNpcResponse(prev => ({
+        ...prev,
+        Zen: "<span class='text-purple-400'>Zen (SEL Reflection):</span> You've been idle for a while. Take a deep breath and refocus! 🌼"
+      }));
+    }, 60000);
+
+    return () => clearTimeout(idleTimer);
+  }, [userSQL]);
  
   const normalizeSQL = (sql: string) => {
     return sql
