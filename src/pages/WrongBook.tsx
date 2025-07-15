@@ -35,9 +35,9 @@ export default function WrongBook() {
               <p><strong>Your SQL:</strong> <code className="text-cyan-400">{entry.userSQL}</code></p>
               <p><strong>Correct SQL:</strong> <code className="text-green-400">{entry.correctSQL}</code></p>
               <p><strong>Your Mood:</strong> <span className="text-pink-400">{entry.userMood}</span></p>
-              {/* {entry.mood && (
+              {entry.mood && (
                 <p><strong>Your Mood:</strong> <span className="text-pink-400">{entry.mood}</span></p>
-            )} */}
+            )}
 
               <p className="text-xs text-gray-500"><strong>Saved on:</strong> {new Date(entry.timestamp).toLocaleString()}</p>
             </li>

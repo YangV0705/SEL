@@ -206,14 +206,17 @@ export default function MissionLayout({
   const confirmQuit = () => {
     navigate('/');
   };
- 
   const handleSaveWrong = () => {
     const wrongLog = {
-      mission: missionNumber,
-      sql: userSQL,
-      mood: userMood,
-      time: new Date().toLocaleString()
+      missionNumber,
+      userSQL,
+      correctSQL,
+      story,
+      nova,
+      userMood,
+      timestamp: new Date().toISOString()
     };
+  
     const prevLogs = JSON.parse(localStorage.getItem('wrongBook') || '[]');
     localStorage.setItem('wrongBook', JSON.stringify([...prevLogs, wrongLog]));
     setShowWrongModal(false);
