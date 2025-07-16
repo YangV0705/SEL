@@ -66,7 +66,7 @@ app.post('/api/npc-feedback', async (req, res) => {
         model: "claude-3-haiku-20240307",
         messages: [{ role: "user", content: prompt }],
         max_tokens: 300,
-        temperature: 0.7
+        temperature: 0.9
       }),
     });
 
