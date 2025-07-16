@@ -28,11 +28,14 @@ app.post('/api/npc-feedback', async (req, res) => {
   Instructions:
   - Compare user's SQL to the correct SQL (ignoring case and whitespace differences).
   - If it is correct:
-    - Return positive feedback from each character.
+    - Return positive feedback from each character, with at least one unique phrase that was not used in previous feedback.
+    - Vary your tone and wording each time to avoid repetition. Add excitement, playful remarks, or surprise expressions.
+
   - If it is incorrect:
     - Return constructive feedback from each character encouraging improvement.
   - Important: Zen (Emotional Coach) should always provide some feedback when the user's SQL is incorrect, even if there is no syntax error.
-  
+  - Each response should sound different, avoid repeating the same wording across multiple requests. Even if the SQL is correct, use fresh metaphors, emotions, and motivational styles.
+
   Characters:
   1. Cipher (Technical Assistant): Provide technical SQL-specific feedback (syntax, logic).
   2. Zen (Emotional Coach): Provide motivation, encouragement, and emotional support. Always give feedback when the user's SQL is incorrect.
