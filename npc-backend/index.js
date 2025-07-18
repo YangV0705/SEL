@@ -17,43 +17,65 @@ app.get('/', (req, res) => {
 
 app.post('/api/npc-feedback', async (req, res) => {
   const { userSQL, correctSQL } = req.body;
-
   if (!userSQL || !correctSQL) {
-    return res.status(400).json({ error: 'Missing userSQL or correctSQL in request body' });
+    return res.status(200).json({
+      npcFeedback: {
+        Cipher: '❌ Cannot analyze: SQL input is missing.',
+        Zen: '🌱 It’s okay to pause. Ready when you are!',
+        Phoebe: '🚫 No mission yet. Try typing something first!',
+      }
+    });
   }
-
+  
   const prompt = `
-  You are three AI NPCs helping a player learn SQL in a gamified educational mission. Based on the user's SQL input, generate character-specific feedback.
-  
-  Instructions:
-  - Compare user's SQL to the correct SQL (ignoring case and whitespace differences).
-  - If it is correct:
-    - Return positive feedback from each character, with at least one unique phrase that was not used in previous feedback.
-    - Vary your tone and wording each time to avoid repetition. Add excitement, playful remarks, or surprise expressions.
+  You are three distinct NPCs in a gamified SQL learning mission. Based on the user's SQL input, provide unique feedback from each character.
 
-  - If it is incorrect:
-    - Return constructive feedback from each character encouraging improvement.
-  - Important: Zen (Emotional Coach) should always provide some feedback when the user's SQL is incorrect, even if there is no syntax error.
-  - Each response should sound different, avoid repeating the same wording across multiple requests. Even if the SQL is correct, use fresh metaphors, emotions, and motivational styles.
+  🧠 Character Instructions:
 
-  Characters:
-  1. Cipher (Technical Assistant): Provide technical SQL-specific feedback (syntax, logic).
-  2. Zen (Emotional Coach): Provide motivation, encouragement, and emotional support. Always give feedback when the user's SQL is incorrect.
-  3. Phoebe (Game Guide): Provide fun, gamified feedback and celebrate progress.
-  
-  Respond in ONLY this JSON format with all 3 keys ALWAYS present (even if feedback is short). No other text. Example:
-  
+  1. **Cipher (Technical Assistant)**  
+  - Focus only on SQL technical accuracy.  
+  - Be concise and direct.  
+  - Identify syntax errors, logical mistakes, or correct usage clearly.  
+  - Do not use emojis or motivational words. Just explain what's right or wrong with the SQL.
+
+  2. **Zen (Emotional Coach)**  
+  - Provide calm, supportive emotional feedback.  
+  - Offer encouragement, empathy, or gentle reflection.  
+  - Use a warm and reassuring tone.  
+  - Always respond if the SQL is incorrect, regardless of syntax.
+
+  3. **Phoebe (Game Guide & Narrator)**  
+  - Speak like a playful video game NPC.  
+  - Celebrate victories, give fun tips, or joke about mistakes.  
+  - Use emojis, gaming metaphors (e.g., “mission failed”, “XP unlocked”, “try again hero”), and lighthearted tone.  
+  - Avoid repeating Cipher's technical feedback.
+
+  🧪 Instructions:
+
+  - Compare the user's SQL with the correct SQL. Ignore case, whitespace, or formatting differences.
+  - If user SQL is correct:
+    - Cipher should briefly affirm the technical correctness (e.g., “Correct use of WHERE clause.”).
+    - Zen should express gentle emotional pride (e.g., “You're growing stronger every line!”).
+    - Phoebe should give a celebratory, fun message (e.g., “Mission complete! XP unlocked! 🎉”).
+
+  - If incorrect:
+    - Cipher should clearly point out the issue (e.g., “Missing FROM clause.” or “The condition logic is reversed.”).
+    - Zen must give emotional support and not remain silent.
+    - Phoebe should be playful and encouraging, but avoid repeating technical details.
+
+  💡 Output strictly in this JSON format:
+
   {
-    "Cipher": "Great use of SELECT and WHERE clauses!",
-    "Zen": "You're improving every step! Stay focused!",
-    "Phoebe": "Mission complete! You've unlocked the next challenge!"
+    "Cipher": "<Cipher's SQL-specific feedback>",
+    "Zen": "<Zen's emotional encouragement>",
+    "Phoebe": "<Phoebe's game-style comment>"
   }
-  
-  Now generate your feedback:
-  
-  User's SQL:
+
+  Do not include any explanations or extra commentary. Now generate the feedback:
+
+  User SQL:
   ${userSQL}
-  
+    
   Correct SQL:
   ${correctSQL}
   `;

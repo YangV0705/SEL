@@ -56,6 +56,15 @@ export default function MissionLayout({
  
   const missionKey = `mission_${missionNumber}_completed`;
   const missionAlreadyDone = !!localStorage.getItem(missionKey);
+  const phoebeQuitMessages = [
+    "You're doing so well—don't leave yet! 🧠✨",
+    "Every great hacker faces challenges. Stay strong! 💪",
+    "You've made great progress—don't stop now! 🌈",
+    "Persistence is key to mastering SQL. Keep going! 🔑",
+    "It's okay to struggle — what matters is that you keep trying. 💖",
+    "We believe in you! Just one more try? 💫"
+  ];
+  
  
   useEffect(() => {
     const syncPoints = () => {
@@ -128,6 +137,16 @@ export default function MissionLayout({
   };
  
   const handleExecute = async () => {
+    if (!userSQL.trim()) {
+      setNpcResponse({
+        Cipher: "<span class='text-blue-400'>Cipher (Hint & Warning):</span> ❌ Cannot analyze: SQL input is missing.",
+        Zen: "<span class='text-purple-400'>Zen (SEL Reflection):</span> 🌱 It’s okay to pause. Ready when you are!",
+        Phoebe: "<span class='text-pink-400'>Phoebe (Game Feedback):</span> 🚫 No mission yet. Try typing something first!",
+      });
+      setResultTable(null);
+      return;
+    }
+
     const isCorrect = areSQLSemanticallyEquivalent(userSQL, correctSQL);
     const duration = (Date.now() - startTime) / 1000;
     let npcFeedback = { Cipher: '', Zen: '', Phoebe: '' };
@@ -150,7 +169,7 @@ export default function MissionLayout({
     } catch (error) {
       console.error('LLM fetch error:', error);
       npcFeedback = {
-        Cipher: '⚠️ Claude API not responding.',
+        Cipher: '⚠️ The respond is error, Please try again.',
         Zen: '',
         Phoebe: ''
       };
@@ -229,11 +248,7 @@ export default function MissionLayout({
       }
     }
   };
- 
-  const handleQuit = () => {
-    setShowQuitConfirm(true);
-  };
- 
+
   const confirmQuit = () => {
     navigate('/');
   };
@@ -252,6 +267,25 @@ export default function MissionLayout({
     localStorage.setItem('wrongBook', JSON.stringify([...prevLogs, wrongLog]));
     setShowWrongModal(false);
     setUserMood('');
+  };
+
+  const handleQuit = () => {
+    setShowQuitConfirm(true);
+  
+    const randomIndex = Math.floor(Math.random() * phoebeQuitMessages.length);
+    const randomMessage = phoebeQuitMessages[randomIndex];
+  
+    setNpcResponse(prev => ({
+      ...prev,
+      Phoebe: `<span class='text-pink-400'>Phoebe (Game Feedback):</span> ${randomMessage}`
+    }));
+  
+    setTimeout(() => {
+      setNpcResponse(prev => ({
+        ...prev,
+        Phoebe: ''
+      }));
+    }, 15000);
   };
  
   return (
@@ -303,7 +337,15 @@ export default function MissionLayout({
             )}
             <button onClick={() => navigate('/')} className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded shadow-md">⇱ Home</button>
             <button onClick={() => navigate('/wrongbook')} className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded shadow-md">✎ WrongBook</button>
-            <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="bg-gray-700 text-white px-3 py-2 rounded">↺ Reset All Progress</button>
+            <button
+              onClick={() => {
+                localStorage.clear();
+                navigate('/');
+              }}
+              className="bg-gray-700 text-white px-3 py-2 rounded"
+            >
+              ↺ Reset All Progress
+            </button>
           </div>
  
           <div className="grid grid-cols-3 gap-4 mt-4">
