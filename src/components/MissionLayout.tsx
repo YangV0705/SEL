@@ -338,47 +338,52 @@ export default function MissionLayout({
           <RewardStatus />
         </div>
  
-        {/* RIGHT COLUMN: Schema + Badge Rule */}
         <div className="flex flex-col gap-4">
-            <div className="border border-green-500 p-4 rounded overflow-auto max-h-[30rem]">
-              <h2 className="text-lg font-bold text-green-400 mb-2">📊 Database Schema</h2>
-              <table className="w-full text-left text-green-400 border-collapse text-sm">
-                <thead>
-                  <tr className="bg-green-800 text-white">
-                    <th className="border border-green-600 px-2 py-1">Table</th>
-                    <th className="border border-green-600 px-2 py-1">Fields</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { name: 'Employee', fields: 'employeeID, firstName, lastName, jobTitle, department, lastLogin' },
-                    { name: 'Robot', fields: 'robotID, Model, manufDate, status, lastUpdateOn, lastUpdatedByEmpID' },
-                    { name: 'Log', fields: 'logID, actionDesc, timestamp, robotID, employeeID' },
-                    { name: 'Incident', fields: 'incidentID, desc, timestamp, reportedBy, robotID' },
-                    { name: 'AccessCode', fields: 'accessCode, accessLevel, lastAccess, employeeID' },
-                  ].map((row) => (
-                    <tr key={row.name}>
-                      <td className="border border-green-600 px-2 py-1 font-bold">{row.name}</td>
-                      <td className="border border-green-600 px-2 py-1">{row.fields}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-  
-            {/* Badge Rule Box */}
-            <div className="border border-green-500 p-4 rounded text-green-300 font-mono text-sm leading-relaxed">
-              <h4 className="text-md font-bold text-yellow-300 mb-2">🔓 How to Earn Badges</h4>
-              <ul className="list-disc ml-5 space-y-1">
-                <li>✔️ Complete 2 missions to earn 1 badge.</li>
-                <li>✔️ Each badge shows a SQL skill you've mastered.</li>
-                <li>🏁 Earn all 5 badges to unlock the next chapter!</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-  
+    {/* Database Schema */}
+    <div className="border border-green-500 p-4 rounded overflow-auto max-h-[30rem]">
+      <h2 className="text-lg font-bold text-green-400 mb-2">📊 Database Schema</h2>
+      <table className="w-full text-left text-green-400 border-collapse text-sm">
+        <thead>
+          <tr className="bg-green-800 text-white">
+            <th className="border border-green-600 px-2 py-1">Table</th>
+            <th className="border border-green-600 px-2 py-1">Fields</th>
+          </tr>
+        </thead>
+        <tbody>
+          {[
+            { name: 'Employee', fields: 'employeeID, firstName, lastName, jobTitle, department, lastLogin' },
+            { name: 'Robot', fields: 'robotID, Model, manufDate, status, lastUpdateOn, lastUpdatedByEmpID' },
+            { name: 'Log', fields: 'logID, actionDesc, timestamp, robotID, employeeID' },
+            { name: 'Incident', fields: 'incidentID, desc, timestamp, reportedBy, robotID' },
+            { name: 'AccessCode', fields: 'accessCode, accessLevel, lastAccess, employeeID' },
+          ].map((row) => (
+            <tr key={row.name}>
+              <td className="border border-green-600 px-2 py-1 font-bold">{row.name}</td>
+              <td className="border border-green-600 px-2 py-1">{row.fields}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    {/* Badge Rule Box */}
+    <div className="border border-green-500 p-4 rounded text-green-300 font-mono text-sm leading-relaxed">
+      <h4 className="text-md font-bold text-yellow-300 mb-2">🔓 How to Earn Badges</h4>
+      <ul className="list-disc ml-5 space-y-1">
+        <li>✔️ Complete 2 missions to earn 1 badge.</li>
+        <li>✔️ Each badge shows a SQL skill you've mastered.</li>
+        <li>🏁 Earn all 5 badges to unlock the next chapter!</li>
+      </ul>
+    </div>
+
+    {/* Hint Box */}
+    <div className="border border-yellow-500 p-4 rounded text-yellow-300 font-mono text-sm leading-relaxed bg-black">
+      💡 <strong>Stuck?</strong> If you're really having trouble, check the <span className="underline font-semibold">WrongBook</span> for correct answers and examples.
+    </div>
+  </div>
+</div>
+</div>
+
       <Dialog open={showWrongModal} onClose={() => setShowWrongModal(false)}>
         <DialogTitle>Save to Mistake Journal</DialogTitle>
         <DialogContent>
