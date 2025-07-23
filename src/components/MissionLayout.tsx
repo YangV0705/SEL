@@ -150,12 +150,13 @@ export default function MissionLayout({
     const isCorrect = areSQLSemanticallyEquivalent(userSQL, correctSQL);
     const duration = (Date.now() - startTime) / 1000;
     let npcFeedback = { Cipher: '', Zen: '', Phoebe: '' };
- 
+
+    const userName = localStorage.getItem('userName') || 'Anonymous';
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/npc-feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userSQL, correctSQL }),
+        body: JSON.stringify({ userSQL, correctSQL, userName }),
       });
  
       if (!response.ok) throw new Error(`Server Error: ${response.status}`);
