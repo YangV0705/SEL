@@ -1,16 +1,20 @@
 # SQL Cyber Missions
 
-An immersive interactive educational game teaching SQL through a cyberpunk storyline.
+A gamified SQL learning platform with emotionally responsive NPCs powered by Claude 3 Haiku and SEL principles.
 
 ## 🎮 Project Overview
 
-Players solve a series of SQL-based missions to track down a rogue hacker and protect the digital world. The game combines storytelling, tasks, and dynamic NPC feedback to make learning SQL engaging and immersive.
+SQL Cyber Missions is an interactive educational game that teaches SQL through a hacker-themed storyline.  
+Learners solve a series of SQL-based missions to track down a rogue hacker and protect digital infrastructure.
+The platform integrates **Social and Emotional Learning (SEL)** to reduce frustration and increase engagement.  
+Learners receive personalized support from three emotionally intelligent NPCs, powered by Claude 3 Haiku.
+
 
 
 ## Characters
-- **Cipher** – Technical assistant offering SQL hints.
-- **Zen** – Provides emotional guidance and motivation.
-- **Phoebe** – Tracks your progress and gives feedback.
+- **Cipher** – Offers SQL syntax and logic hints when an incorrect query is submitted.
+- **Zen** – Provides emotional support when frustration is detected (e.g., repeated deletions or long task time).
+- **Phoebe** – Offers praise and encouragement when effort is detected or after a blank/halted attempt.
 
 ## How to Play
 1. Clone the repository:
@@ -27,10 +31,11 @@ npm install
 cd ../npc_backend
 npm install
 ```
-4. Configure backend environment variables by creating a .env file in the backend folder:
+4. Create a `.env` file inside `npc_backend`:
 ```bash
-OPENAI_API_KEY=your_openai_api_key_here
 PORT=4000
+MONGODB_URI=your_mongo_uri_here
+ANTHROPIC_API_KEY=your_claude_api_key_here
 ```
 5. Start the backend server:
 ```bash
@@ -41,25 +46,36 @@ node index.js
 npm run dev
 ```
 
-##  Game Flow
-- Start on the **Home Page** to learn the mission context
-- Each mission involves writing an SQL query to solve a problem
-- If incorrect:
-  - Cipher provides technical hints
-  - Zen offers emotional support
-  - Phoebe tracks your attempts and gives motivational feedback
-- Correct solutions reward points and unlock new missions
+## 🧠 Game Flow  
+- Start at the Home Page and begin the narrative
+- Complete 10 missions by solving SQL challenges
+- Real-time NPC feedback responds to your progress:
+  - Incorrect query → Cipher offers help
+  - Signs of confusion/frustration → Zen offers support
+  - Blank queries or demotivation → Phoebe offers encouragement
+- Save mistakes + emotional reflections in the **WrongBook**
+- Use the **WrongBook** to review past mistakes and see the correct SQL solution for each mission.
+- Earn badges to unlock story progression
 
 ## Tech Stack
-**Frontend** - React + TypeScript + TailwindCSS + React Router + Framer Motion 
-**Backend** - Node.js + Express + Anthropic Claude API
+**Frontend**: React, TypeScript, TailwindCSS, React Router, Framer Motion  
+**Backend**: Node.js, Express  
+**Database**: MongoDB Atlas  
+**LLM Integration**: Claude 3 Haiku (Anthropic API)
 
-##  In Progress
-- complete missions 3 through 10
+## 📦 Features  
 
-- emotion recognition to drive NPC feedback
+- Emotionally supportive feedback from 3 NPCs  
+- Claude LLM-powered dialogue generation  
+- Real-time learner state detection (delay, blank, repeat)  
+- **WrongBook** mistake review + emotion logging  
+- Persistent progress storage across devices
 
-- Mistake review page
+## 🧭 Future Work  
+
+- Add facial emotion recognition for more adaptive NPC support  
+- Instructor dashboard for tracking class-wide progress  
+- Expand to other domains (e.g., Python, Data Science)
 
 ## Demo Link
 - https://sql-challenge-game.netlify.app/
