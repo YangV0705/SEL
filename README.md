@@ -1,4 +1,8 @@
-# Team Member: Yang Lyu, Qi Hu
+# Project Title
+Emotionally Responsive NPCs for SEL Learning
+
+# Team Member
+Yang Lyu, Qi Hu
 
 # SQL Cyber Missions
 
