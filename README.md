@@ -1,3 +1,5 @@
+# Team Member: Yang Lyu, Qi Hu
+
 # SQL Cyber Missions
 
 A gamified SQL learning platform with emotionally responsive NPCs powered by Claude 3 Haiku and SEL principles.
